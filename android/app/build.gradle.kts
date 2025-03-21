@@ -41,19 +41,12 @@ android {
     }
 
     signingConfigs {
-        val keystoreBase64 = System.getenv("KEYSTORE_BASE64") ?: ""
-        val keystoreFile = rootProject.file("upload-keystore.jks")
-
-        if (keystoreBase64.isNotEmpty()) {
-            val decodedBytes = Base64.getDecoder().decode(keystoreBase64)
-            FileOutputStream(keystoreFile).use { it.write(decodedBytes) }
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+            storePassword = keystoreProperties["storePassword"] as String
         }
-
-        keyAlias = System.getenv("KEY_ALIAS") ?: ""
-        keyPassword = System.getenv("KEY_PASSWORD") ?: ""
-        storeFile = keystoreFile
-        storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
-    }
     }
     buildTypes {
         release {
