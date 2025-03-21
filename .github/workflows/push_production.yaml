@@ -14,7 +14,7 @@ jobs:
       JAVA_VERSION: 12.0
       FLUTTER_VERSION: 3.29.0
       AAB_PATH: build/app/outputs/bundle/release/app-release.aab
-      KEYSTORE_PATH: android/upload-keystore.jks
+      KEYSTORE_PATH: android/app/upload-keystore.jks
       KEY_PROPS_PATH: android/key.properties
       SERVICE_ACCOUNT_PATH: store_credentials.json
 
@@ -33,7 +33,9 @@ jobs:
         run: flutter analyze
 
       - name: Decode Android keystore
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ${{ env.KEYSTORE_PATH }}
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ${{ env.KEYSTORE_PATH }} || echo "Keystore decode failed!"
+          ls -l android/  # Check if keystore exists
 
       - name: Decode Android key properties
         run: echo "${{ secrets.ANDROID_KEY_PROPERTIES }}" | base64 --decode > ${{ env.KEY_PROPS_PATH }}
