@@ -9,6 +9,15 @@ jobs:
     permissions:
       contents: write
 
+    env:
+    # Setup env variables that will be used throughout the workflow
+      JAVA_VERSION: 12.0
+      FLUTTER_VERSION: 3.29.0
+      AAB_PATH: build/app/outputs/bundle/release/app-release.aab
+      KEYSTORE_PATH: android/upload-keystore.jks
+      KEY_PROPS_PATH: android/key.properties
+      SERVICE_ACCOUNT_PATH: store_credentials.json
+
     steps:
       - uses: actions/checkout@v4
 
@@ -22,6 +31,12 @@ jobs:
 
       - name: Analyze project source
         run: flutter analyze
+
+      - name: Decode Android keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ${{ env.KEYSTORE_PATH }}
+
+      - name: Decode Android key properties
+        run: echo "${{ secrets.ANDROID_KEY_PROPERTIES }}" | base64 --decode > ${{ env.KEY_PROPS_PATH }}
 
       - name: Ensure App Builds
         run: flutter build apk --release
